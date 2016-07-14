@@ -11,6 +11,7 @@
 		
 	</head>
 	<body>
+
         <div class="board">
                 <div id="cell21" class="top left corner game cell free-parking"><div class="content"></div></div>
                 <div id="cell22" class="top game cell available property" data-group="group5"><div class="content"></div><div class="title"></div></div>
@@ -74,8 +75,8 @@
                 <div class="cell"></div>
                 <div id="dice1" class="cell dice clickable shadowed">
                         <div class="dice-dot num2 num3 num4 num5 num6"></div>
-                        <div class="dice-dot right num5 num6"></div><br />
-                        <div class="dice-dot num4 num6"></div>
+                        <div class="dice-dot right num4 num5 num6"></div><br />
+                        <div class="dice-dot num6"></div>
                         <div class="dice-dot num1 num5 num3"></div>
                         <div class="dice-dot num6"></div><br />
                         <div class="dice-dot num4 num5 num6"></div>
@@ -83,9 +84,9 @@
                 </div>
                 <div class="cell"></div>
                 <div id="dice2" class="cell dice clickable shadowed">
-                        <div class="dice-dot num2 num3 num5 num6"></div>
+                        <div class="dice-dot num2 num3 num4 num5 num6"></div>
                         <div class="dice-dot right num4 num5 num6"></div><br />
-                        <div class="dice-dot num4 num6"></div>
+                        <div class="dice-dot num6"></div>
                         <div class="dice-dot num1 num5 num3"></div>
                         <div class="dice-dot num6"></div><br />
                         <div class="dice-dot num4 num5 num6"></div>
@@ -200,7 +201,14 @@
                                         <button id="ok" class="clickable">OK</button>
                                 </div>
                         </div>
+                        <div id="broke" class="popup-page" style="display:none;">
+                                <div class="popup-title">You're broke!!</div>
+                                <div class="popup-content">You're all out of money so you lose.<br/>
+                                        <button class="clickable">OK</button><br>
+                        </div>
                 </div>
         </div>
         </div>
+                </div>
+    </body>
 </html>

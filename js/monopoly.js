@@ -1,6 +1,6 @@
 var Monopoly = {};
 Monopoly.allowRoll = true;
-Monopoly.moneyAtStart = 1000;
+Monopoly.moneyAtStart = 200;
 Monopoly.doubleCounter = 0;
 
 Monopoly.init = function(){
@@ -43,9 +43,13 @@ Monopoly.getPlayersMoney = function(player){
 Monopoly.updatePlayersMoney = function(player,amount){
     var playersMoney = parseInt(player.attr("data-money"));
     playersMoney -= amount;
-    if (playersMoney < 0 ){
-        alert("you are broke!")
+    if (playersMoney <= 0 ){
+        Monopoly.getPopup("broke");
+        Monopoly.showPopup("broke");
     }
+    $(".popup-page#broke").find("button").unbind("click").bind('click', function(){ ///// fix with Gilad -- code too complicated
+        Monopoly.closePopup();
+    });
     player.attr("data-money",playersMoney);
     player.attr("title",player.attr("id") + ": $" + playersMoney);
     Monopoly.playSound("chaching");
@@ -149,7 +153,6 @@ Monopoly.handlePayRent = function(player,propertyCell){
     popup.find("#amount-placeholder").text(currentRent);
     popup.find("button").unbind("click").bind("click",function(){
         var properyOwner = $(".player#"+ properyOwnerId);
-        console.log(properyOwnerId)
         Monopoly.updatePlayersMoney(player,currentRent);
         Monopoly.updatePlayersMoney(properyOwner,-1*currentRent);
         Monopoly.closeAndNextTurn();
@@ -180,7 +183,6 @@ Monopoly.handleChanceCard = function(player){
         var currentBtn = $(this);
         var action = currentBtn.attr("data-action");
         var amount = currentBtn.attr("data-amount");
-        console.log("testing the action and amount " + action + " " + amount)
         Monopoly.handleAction(player,action,amount);
     });
     Monopoly.showPopup("chance");
@@ -188,7 +190,21 @@ Monopoly.handleChanceCard = function(player){
 
 Monopoly.handleCommunityCard = function(player){
     //TODO: implement this method
-    alert("not implemented yet!")
+    var popup = Monopoly.getPopup("community");
+    popup.find(".popup-content").addClass("loading-state");
+    $.get("https://itcmonopoly.appspot.com/get_random_community_card", function(chanceJson){
+        popup.find(".popup-content #text-placeholder").text(chanceJson["content"]);
+        popup.find(".popup-title").text(chanceJson["title"]);
+        popup.find(".popup-content").removeClass("loading-state");
+        popup.find(".popup-content button").attr("data-action",chanceJson["action"]).attr("data-amount",chanceJson["amount"]);
+    },"json");
+    popup.find("button").unbind("click").bind("click",function(){
+        var currentBtn = $(this);
+        var action = currentBtn.attr("data-action");
+        var amount = currentBtn.attr("data-amount");
+        Monopoly.handleAction(player,action,amount);
+    });
+    Monopoly.showPopup("chance");
     Monopoly.setNextPlayerTurn();
 };
 
@@ -242,6 +258,7 @@ Monopoly.handleBuy = function(player,propertyCell,propertyCost){
     var playersMoney = Monopoly.getPlayersMoney(player)
     if (playersMoney < propertyCost){
         Monopoly.showErrorMsg();
+        Monopoly.playSound("sadtrombone");
     }else{
         Monopoly.updatePlayersMoney(player,propertyCost);
         var rent = Monopoly.calculateProperyRent(propertyCost);
@@ -259,10 +276,8 @@ Monopoly.handleBuy = function(player,propertyCell,propertyCost){
 
 
 Monopoly.handleAction = function(player,action,amount){
-    console.log(action)
     switch(action){
         case "move":
-       	    console.log(amount)
             Monopoly.movePlayer(player,amount);
              break;
         case "pay":
@@ -297,7 +312,6 @@ Monopoly.getNextCell = function(cell){
     var currentCellId = parseInt(cell.attr("id").replace("cell",""));
     var nextCellId = currentCellId + 1
     if (nextCellId > 40){
-        console.log("YAY")
         Monopoly.handlePassedGo();
         nextCellId = 1;
     }
@@ -307,7 +321,7 @@ Monopoly.getNextCell = function(cell){
 
 Monopoly.handlePassedGo = function(){
     var player = Monopoly.getCurrentPlayer();
-    Monopoly.updatePlayersMoney(player,Monopoly.moneyAtStart/10);
+    Monopoly.updatePlayersMoney(player,-Monopoly.moneyAtStart/10);
 };
 
 
